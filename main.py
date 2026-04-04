@@ -11,7 +11,7 @@ from functools import lru_cache
 
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import HTTPBearer, HTTPAuthCredentials
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel, EmailStr, Field
 import anthropic
 from passlib.context import CryptContext
@@ -152,7 +152,7 @@ def create_access_token(user_id: str, expires_delta: Optional[timedelta] = None)
     to_encode = {"sub": user_id, "exp": expire}
     return jwt.encode(to_encode, JWT_SECRET, algorithm=ALGORITHM)
 
-def get_current_user(credentials: HTTPAuthCredentials = Depends(security)) -> str:
+def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> str:
     token = credentials.credentials
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=[ALGORITHM])
